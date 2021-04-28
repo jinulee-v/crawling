@@ -7,10 +7,11 @@ def filter(args):
   
   for line in data:
     for i in range(len(line)):
-      if ' 기자' in line[i]:
+      if 'window.ReactionButtonType' in line[i] \
+        or '국방부의 공식입장과 관련이 없습니다.' in line[i]:
         del line[i:]
         break
-  data = ['\t'.join(line) for line in data]
+  data = ['\t'.join(line) for line in data if len(line)>3]
 
   with open(args.dst_path, 'w', encoding='UTF-8') as file:
     file.write('\n'.join(data)+'\n')
