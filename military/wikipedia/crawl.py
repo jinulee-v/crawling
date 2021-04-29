@@ -124,7 +124,7 @@ def crawl(args):
           'format': 'json',
           'titles': title,
           'prop': 'extracts',
-          'exintro': True,
+          'exintro': False,
           'explaintext': True,
       }, headers={'User-Agent': 'Mozilla/5.0'}).json()
     result = [split_sentences(page['extract'].replace('\n', ' '), safe=True) for page in response['query']['pages'].values()]
