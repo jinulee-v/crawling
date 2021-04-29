@@ -1,4 +1,5 @@
 import argparse
+import re
 
 def filter(args):
   with open(args.src_path, 'r', encoding='utf-8') as file:
@@ -7,11 +8,10 @@ def filter(args):
   
   for line in data:
     for i in range(len(line)):
-      if 'window.ReactionButtonType' in line[i] \
-        or '국방부의 공식입장과 관련이 없습니다.' in line[i]:
-        del line[i:]
-        break
-  data = ['\t'.join(line) for line in data if len(line)>3]
+      line[i] = re.sub('SE[A-Z_0-9\-]*', '', line[i].replace('{', '').replace('}', '').replace('$', '')).strip()
+      line[i] = re.sub('\s+', ' ', line[i])
+
+  data = ['\t'.join([sent for sent in line if len(sent)>3]) for line in data if len(line) > 3]
 
   with open(args.dst_path, 'w', encoding='UTF-8') as file:
     file.write('\n'.join(data)+'\n')

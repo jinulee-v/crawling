@@ -2,8 +2,9 @@ import datetime
 import argparse
 from tqdm import tqdm
 
-import  requests
+import requests
 from bs4 import BeautifulSoup
+from kss import split_sentences
 
 topics = {
   'Minister of Defense': 'BBSMSTR_000000010021',
@@ -34,12 +35,12 @@ def parse(html):
     '#content_body'
   )[0].findAll(text=True, recursive=True)
   body_text = ' '.join([text.strip().replace('\n', '').replace('\t', '') for text in body_text])
-  body_text = body_text.replace('. ', '.\t')
+  body_text = '\t'.join(split_sentences(body_text))
   
   return [title, body_text]
 
 def crawl(args):
-  file = open(args.data_path, 'a')
+  file = open(args.dst_path, 'a')
 
   start_date = datetime.date(2010, 7, 3)
   end_date = datetime.date(2020, 4, 20)
@@ -91,8 +92,7 @@ def crawl(args):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  parser.add_argument('--dst-filevi .gitignore
-  ', type=str, default='data/crawl.tsv', help='Path to store crawl results')
+  parser.add_argument('--dst-path', type=str, default='data/crawl.tsv', help='Path to store crawl results')
   args = parser.parse_args()
 
   crawl(args)

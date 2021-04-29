@@ -2,8 +2,9 @@ import datetime
 import argparse
 from tqdm import tqdm
 
-import  requests
+import requests
 from bs4 import BeautifulSoup
+from kss import split_sentences
 
 categories = {
   '국방소식/이슈 바로보기': '467601',
@@ -48,12 +49,12 @@ def parse(html):
     '#jb_main_content > div.jb_content.jb_content_post > div.jb_article'
   )[0].findAll(text=True, recursive=True)
   body_text = ' '.join([text.strip().replace('\n', '').replace('\t', '') for text in body_text])
-  body_text = body_text.replace('. ', '.\t')
+  body_text = '\t'.join(split_sentences(body_text))
   
   return [category, title, body_text]
 
 def crawl(args):
-  file = open(args.data_path, 'w')
+  file = open(args.dst_path, 'w')
 
   total_articles = 0
   # Daily index
