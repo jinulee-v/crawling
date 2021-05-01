@@ -116,19 +116,24 @@ def crawl(args):
         file.write('\n'.join(wiki_list))
     
   file = open(args.dst_path, 'w', encoding='UTF-8')
-  for title in tqdm(wiki_list):
+  # FIXME: stride=50
+  stride = 1
+  for i in tqdm(range(0, len(wiki_list), stride)):
+    titles = wiki_list[i: min(i+stride, len(wiki_list))]
     response = requests.get(
       'https://ko.wikipedia.org/w/api.php',
       params={
           'action': 'query',
           'format': 'json',
-          'titles': title,
+          'titles': '|'.join(titles),
           'prop': 'extracts',
-          'exintro': False,
           'explaintext': True,
       }, headers={'User-Agent': 'Mozilla/5.0'}).json()
+    if i == 0:
+      print(response)
     result = [split_sentences(page['extract'].replace('\n', ' '), safe=True) for page in response['query']['pages'].values()]
-    file.write('\t'.join([title] + result[0]) + '\n')
+    for title, result in zip(titles, result):
+      file.write('\t'.join([title] + result) + '\n')
   file.close()
 
 

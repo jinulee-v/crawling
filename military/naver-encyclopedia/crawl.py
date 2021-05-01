@@ -45,7 +45,7 @@ def parse(html):
   )[0].findAll(text=True, recursive=True)
   body_text = [obj for obj in body_text]
   body_text = ' '.join([text.strip().replace('\n', '').replace('\t', '') for text in body_text])
-  body_text = '\t'.join(split_sentences((body_text)))
+  body_text = '\t'.join(split_sentences(body_text, safe=True))
   
   return [title, body_text]
 
