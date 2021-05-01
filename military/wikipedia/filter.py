@@ -21,9 +21,9 @@ def discard_check(sent):
 def filter(args):
   with open(args.src_path, 'r', encoding='utf-8') as file:
     data = file.read().splitlines()
-  data = [re.sub('([^A-Za-z0-9]+?)\. ([^A-Za-z0-9]+?)', '\g<1>.\t\g<2>', line) for line in data]
-  data = [re.sub('([A-Za-z0-9]{2,}?)\. ([^A-Za-z0-9]+?)', '\g<1>.\t\g<2>', line) for line in data]
-  data = [re.sub('([^A-Za-z0-9]+?)\. ([A-Za-z0-9]+?)', '\g<1>.\t\g<2>', line) for line in data]
+  data = [re.sub('([^A-Za-z0-9]+?)\.|\?|!\s*?([^A-Za-z0-9]+?)', '\g<1>.\t\g<2>', line) for line in data]
+  data = [re.sub('([A-Za-z0-9]{2,}?)\.|\?|!\s*?([^A-Za-z0-9]+?)', '\g<1>.\t\g<2>', line) for line in data]
+  data = [re.sub('([^A-Za-z0-9]+?)\.|\?|!\s*?([A-Za-z0-9]+?)', '\g<1>.\t\g<2>', line) for line in data]
   data = [line.split('\t')[1:] for line in data]
 
   result = set()
@@ -35,7 +35,8 @@ def filter(args):
       if discard_check(sent):
         continue
       sent = re.sub(r'== .* ==', '', sent).replace('=', '').strip()
-      if not sent:
+      sent = re.sub(r'\(.{5,}\)', '', sent).strip()
+      if len(sent.split()) <= 3:
         continue
       if not re.match('.*?[\u3131-\u314e|\u314f-\u3163|\uac00-\ud7a3]', sent):
         continue
