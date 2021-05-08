@@ -8,11 +8,11 @@ from kss import split_sentences
 
 topics = {
   'World of arms': '60355',
-  'Aircrafts': '63727',
-  'Ships': '63767',
-  'Automobiles': '63775',
-  'KODEF Military Aircrafts': '60348',
-  'Guns': '60353',
+  # 'Aircrafts': '63727',
+  # 'Ships': '63767',
+  # 'Automobiles': '63775',
+  # 'KODEF Military Aircrafts': '60348',
+  # 'Guns': '60353',
   'Arms and weapons': '60344'
 }
 docid_range = {

@@ -69,44 +69,51 @@ def parse(html):
 
 def crawl(args):
   headers = {'User-Agent': 'Mozilla/5.0'}
-  file = open(args.dst_path, 'w')
+  if args.resume_cat != 'Minister of Defense' or args.resume_page != 1:
+    file = open(args.dst_path, 'a')
+  else:
+    file = open(args.dst_path, 'w')
 
   total_articles = 0
+  resume = False
 
   # Category
   for topic, code in topics.items():
+    if not resume and topic != args.resume_cat:
+      continue
+    resume = True
     print(topic)
     try:
       req_first_page = requests.get(address(code, 1), headers=headers)
+      total_pages = find_total_page(req_first_page.text)
     except:
       print('First page(list) retrieving', topic, i)
       continue
 
-    total_pages = find_total_page(req_first_page.text)
     print('Total pages', total_pages)
 
     # Page index
-    for i in tqdm(range(1, total_pages+1)):
+    for i in tqdm(range(args.resume_page, total_pages+1)):
+      args.resume_page = 0
       # Request topic
       try:        
         req_page = requests.get(address(code, i), headers=headers)
+        article_links = find_article_links(req_page.text)
       except Exception as e:
         print(e)
         continue
-      
-      article_links = find_article_links(req_page.text)
 
       for link in article_links:
         try:
           req = requests.get(link, headers=headers)
+          title, body_text = parse(req.text)
         except Exception as e:
           print(e)
           continue
         
-        title, body_text = parse(req.text)
         file.write('\t'.join([topic, title, body_text]) + '\n')
         total_articles += 1
-        tqdm.write('total articles: '+ str(total_articles))
+        tqdm.write('total articles: {} / cat={}, page={}'.format(total_articles, topic, i))
   
   print("Total articles retrieved: ", total_articles)
   close(file)
@@ -114,6 +121,8 @@ def crawl(args):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--dst-path', type=str, default='data/crawl.tsv', help='Path to store crawl results')
+  parser.add_argument('--resume-cat', type=str, default=list(topics.keys())[0])
+  parser.add_argument('--resume-page', type=int, default=1)
   args = parser.parse_args()
 
   crawl(args)
