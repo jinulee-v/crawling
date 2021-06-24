@@ -69,10 +69,7 @@ def parse(html):
 
 def crawl(args):
   headers = {'User-Agent': 'Mozilla/5.0'}
-  if args.resume_cat != 'Minister of Defense' or args.resume_page != 1:
-    file = open(args.dst_path, 'a')
-  else:
-    file = open(args.dst_path, 'w')
+  file = open(args.dst_path, 'a')
 
   total_articles = 0
   resume = False
@@ -94,7 +91,7 @@ def crawl(args):
 
     # Page index
     for i in tqdm(range(args.resume_page, total_pages+1)):
-      args.resume_page = 0
+      args.resume_page = 1
       # Request topic
       try:        
         req_page = requests.get(address(code, i), headers=headers)
